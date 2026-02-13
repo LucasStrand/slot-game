@@ -6,7 +6,6 @@ export class Reel extends Container {
   public symbols: Symbol[] = [];
   private textures: Texture[];
   private symbolHeight: number;
-  private reelHeight: number;
 
   // Animation state
   private isSpinning: boolean = false;
@@ -17,12 +16,13 @@ export class Reel extends Container {
   private static readonly SYMBOL_COUNT = 5; // visible + buffer
   private static readonly SPIN_SPEED = 20;
 
+  private reelWidth: number;
+
   constructor(textures: Texture[], width: number, height: number) {
     super();
     this.textures = textures;
     this.symbolHeight = height / 3; // 3 visible symbols
-    this.reelHeight = height;
-    this.width = width; // Reel width
+    this.reelWidth = width; // Reel width
 
     this.initSymbols();
   }
@@ -31,8 +31,8 @@ export class Reel extends Container {
     for (let i = 0; i < Reel.SYMBOL_COUNT; i++) {
       const texture = this.getRandomTexture();
       const symbol = new Symbol(i, texture);
-      symbol.setSize(this.width * 0.8, this.symbolHeight * 0.8);
-      symbol.x = this.width / 2;
+      symbol.setSize(this.reelWidth * 0.8, this.symbolHeight * 0.8);
+      symbol.x = this.reelWidth / 2;
       this.symbols.push(symbol);
       this.addChild(symbol);
     }
@@ -106,5 +106,9 @@ export class Reel extends Container {
         },
       });
     });
+  }
+  public destroy(options?: any) {
+    gsap.killTweensOf(this);
+    super.destroy(options);
   }
 }

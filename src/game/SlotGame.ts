@@ -1,5 +1,4 @@
-import { Application, Container, Texture, Graphics, Ticker } from "pixi.js";
-import gsap from "gsap";
+import { Application, Container, Texture, Graphics } from "pixi.js";
 import { Reel } from "./Reel";
 import { GameLogic } from "./GameLogic";
 
@@ -28,7 +27,12 @@ export class SlotGame {
     this.gameLogic = new GameLogic(Date.now(), 5); // 5 symbols
   }
 
+  private isInitialized = false;
+  private isDestroyed = false;
+
   public async initialize(element: HTMLElement) {
+    if (this.isInitialized || this.isDestroyed) return;
+
     await this.app.init({
       background: "#0a0a2a",
       resizeTo: element,
@@ -38,6 +42,14 @@ export class SlotGame {
       autoDensity: true,
       antialias: true,
     });
+
+    if (this.isDestroyed) {
+      // Cleanup was called while we were initializing
+      this.safeDestroy();
+      return;
+    }
+
+    this.isInitialized = true;
 
     element.appendChild(this.app.canvas);
     this.app.stage.addChild(this.gameContainer);
@@ -51,17 +63,75 @@ export class SlotGame {
   }
 
   private generatePlaceholderTextures() {
-    // 5 distinct symbols
-    const colors = [0xff0055, 0x00ff55, 0x5500ff, 0xffff00, 0x00ffff];
-    this.textures = colors.map((color, i) => {
+    const symbolSize = 150;
+
+    // Helper to create base graphics
+    const createBase = () => {
       const g = new Graphics();
-      g.rect(0, 0, 150, 150);
-      g.fill(color);
-      g.stroke({ width: 8, color: 0xffffff });
-      g.circle(75, 75, 30);
-      g.fill(0x000000);
-      return this.app.renderer.generateTexture(g);
-    });
+      // Transparent background, maybe a subtle glow container
+      g.rect(0, 0, symbolSize, symbolSize);
+      g.fill({ color: 0x000000, alpha: 0.5 }); // Semi-transparent black box
+      g.stroke({ width: 2, color: 0x333333 });
+      return g;
+    };
+
+    this.textures = [];
+
+    // 1. Cherry (Red/Green) - Simplified Neon Style
+    const g1 = createBase();
+    g1.circle(50, 90, 25)
+      .fill(0xff0040)
+      .stroke({ width: 4, color: 0xff0040, alpha: 0.8 });
+    g1.circle(100, 90, 25)
+      .fill(0xff0040)
+      .stroke({ width: 4, color: 0xff0040, alpha: 0.8 });
+    // Stems
+    g1.moveTo(50, 65)
+      .lineTo(75, 30)
+      .lineTo(100, 65)
+      .stroke({ width: 5, color: 0x00ff00 });
+    g1.moveTo(75, 30).lineTo(90, 40).stroke({ width: 5, color: 0x00ff00 }); // Leaf
+    this.textures.push(this.app.renderer.generateTexture(g1));
+
+    // 2. Seven (Purple/Pink)
+    const g2 = createBase();
+    g2.moveTo(40, 40)
+      .lineTo(110, 40)
+      .lineTo(60, 110)
+      .stroke({ width: 12, color: 0xd000ff });
+    this.textures.push(this.app.renderer.generateTexture(g2));
+
+    // 3. Bar (Golden/Yellow)
+    const g3 = createBase();
+    g3.roundRect(30, 50, 90, 50, 10)
+      .fill(0x000000)
+      .stroke({ width: 6, color: 0xffd700 });
+    g3.rect(35, 60, 80, 5).fill(0xffd700);
+    g3.rect(35, 72, 80, 5).fill(0xffd700);
+    g3.rect(35, 84, 80, 5).fill(0xffd700);
+    this.textures.push(this.app.renderer.generateTexture(g3));
+
+    // 4. Bell (Cyan)
+    const g4 = createBase();
+    g4.moveTo(75, 30);
+    g4.bezierCurveTo(30, 100, 20, 100, 20, 110);
+    g4.lineTo(130, 110);
+    g4.bezierCurveTo(130, 100, 120, 100, 75, 30);
+    g4.fill(0x000000).stroke({ width: 6, color: 0x00ffff });
+    g4.circle(75, 110, 8).fill(0x00ffff);
+    this.textures.push(this.app.renderer.generateTexture(g4));
+
+    // 5. Diamond (Blue/White)
+    const g5 = createBase();
+    g5.moveTo(75, 30)
+      .lineTo(120, 75)
+      .lineTo(75, 120)
+      .lineTo(30, 75)
+      .closePath();
+    g5.fill(0x000044).stroke({ width: 6, color: 0x4488ff });
+    g5.moveTo(75, 30).lineTo(75, 120).stroke({ width: 2, color: 0x4488ff });
+    g5.moveTo(30, 75).lineTo(120, 75).stroke({ width: 2, color: 0x4488ff });
+    this.textures.push(this.app.renderer.generateTexture(g5));
   }
 
   private initReels() {
@@ -154,10 +224,21 @@ export class SlotGame {
   }
 
   public cleanUp() {
-    this.app.destroy(true, {
-      children: true,
-      texture: true,
-      baseTexture: true,
-    });
+    this.isDestroyed = true;
+    this.safeDestroy();
+  }
+
+  private safeDestroy() {
+    try {
+      // Check if renderer exists (proxy for initialized enough to destroy)
+      if (this.app.renderer) {
+        this.app.destroy(true, {
+          children: true,
+          texture: true,
+        });
+      }
+    } catch (e) {
+      console.warn("SlotGame cleanup warning:", e);
+    }
   }
 }

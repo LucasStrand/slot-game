@@ -149,28 +149,45 @@ export class ParticleSystem {
   }
 
   // Rain effect for big wins
-  coinRain(duration: number = 3000) {
-    const interval = setInterval(() => {
-      const g = new Graphics();
-      const size = 4 + Math.random() * 4;
-      g.circle(0, 0, size);
-      g.fill({ color: 0xffd700 });
-      g.circle(0, 0, size * 0.6);
-      g.fill({ color: 0xffa500 });
+  async coinRain(duration: number = 3000) {
+    // Ensure assets are loaded
+    await import("pixi.js").then(({ Assets }) =>
+      Promise.all([
+        Assets.load("/assets/symbols/gold_coin.svg"),
+        Assets.load("/assets/symbols/cyan_gem.svg")
+      ])
+    );
 
-      g.x = Math.random() * this.app.screen.width;
-      g.y = -20;
-      this.container.addChild(g);
+    // Fallback to PixiJS dynamically imported Sprite if needed
+    const { Sprite, Assets } = await import("pixi.js");
 
-      gsap.to(g, {
-        y: this.app.screen.height + 20,
-        x: g.x + (Math.random() - 0.5) * 100,
+    const interval = setInterval(async () => {
+      // 80% chance for coin, 20% for gem
+      const isCoin = Math.random() > 0.2;
+      const textureArea = isCoin
+        ? await Assets.load("/assets/symbols/gold_coin.svg")
+        : await Assets.load("/assets/symbols/cyan_gem.svg");
+
+      const sprite = new Sprite(textureArea);
+
+      // Randomize size slightly
+      const scale = isCoin ? (0.3 + Math.random() * 0.2) : (0.2 + Math.random() * 0.15);
+      sprite.scale.set(scale);
+      sprite.anchor.set(0.5);
+
+      sprite.x = Math.random() * this.app.screen.width;
+      sprite.y = -50;
+      this.container.addChild(sprite);
+
+      gsap.to(sprite, {
+        y: this.app.screen.height + 100,
+        x: sprite.x + (Math.random() - 0.5) * 150,
         rotation: Math.random() * Math.PI * 4,
-        duration: 1.5 + Math.random(),
+        duration: 1.5 + Math.random() * 1.5,
         ease: "power1.in",
-        onComplete: () => g.destroy(),
+        onComplete: () => sprite.destroy(),
       });
-    }, 50);
+    }, 40);
 
     setTimeout(() => clearInterval(interval), duration);
   }

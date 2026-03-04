@@ -6,7 +6,7 @@ import { GAME_CONFIG } from "../config/gameConfig";
 
 const SYM = GAME_CONFIG.SYMBOL_SIZE;
 const GAP = GAME_CONFIG.SYMBOL_GAP;
-const CELL = SYM + GAP; // height of one cell (symbol + gap)
+const CELL = SYM + GAP;
 
 export class Reel {
   container: Container;
@@ -79,8 +79,8 @@ export class Reel {
             const sprite = new Sprite(texture);
             sprite.anchor.set(0.5);
 
-            // Scale to fit the cell almost entirely (95% of SYM)
-            const scale = (SYM * 0.95) / Math.max(sprite.width, sprite.height);
+            // Scale to fill the cell entirely
+            const scale = SYM / Math.max(sprite.width, sprite.height);
             sprite.scale.set(scale);
 
             // Center perfectly

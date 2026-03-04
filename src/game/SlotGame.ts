@@ -62,10 +62,17 @@ export class SlotGame {
   }
 
   async init(canvas: HTMLCanvasElement) {
+    // Compute canvas size dynamically from config
+    const { REEL_COUNT, SYMBOL_SIZE, REEL_GAP, SYMBOL_GAP, ROWS_VISIBLE } = GAME_CONFIG;
+    const contentW = REEL_COUNT * SYMBOL_SIZE + (REEL_COUNT - 1) * REEL_GAP;
+    const contentH = ROWS_VISIBLE * SYMBOL_SIZE + (ROWS_VISIBLE - 1) * SYMBOL_GAP;
+    const canvasW = contentW + 60; // 30px padding each side
+    const canvasH = contentH + 60;
+
     await this.app.init({
       canvas,
-      width: 900,
-      height: 650,
+      width: canvasW,
+      height: canvasH,
       backgroundColor: GAME_CONFIG.COLORS.BACKGROUND,
       antialias: true,
       resolution: window.devicePixelRatio || 1,
@@ -83,68 +90,19 @@ export class SlotGame {
   }
 
   private createBackground() {
+    // Only subtle glow behind reels on the Pixi canvas; frame is handled by CSS wrapper.
+    const w = this.app.screen.width;
+    const h = this.app.screen.height;
     const bg = new Graphics();
+    bg.rect(0, 0, w, h);
+    bg.fill({ color: GAME_CONFIG.COLORS.BACKGROUND, alpha: 0.5 });
 
-    // Dark gradient background
-    bg.rect(0, 0, 900, 650);
-    bg.fill({ color: GAME_CONFIG.COLORS.BACKGROUND });
-
-    // Subtle radial glow at center
-    bg.circle(450, 280, 350);
-    bg.fill({ color: 0x1a1a4a, alpha: 0.3 });
-    bg.circle(450, 280, 200);
-    bg.fill({ color: 0x2a1a5a, alpha: 0.15 });
+    bg.circle(w / 2, h / 2, 250);
+    bg.fill({ color: 0x1a1a4a, alpha: 0.4 });
+    bg.circle(w / 2, h / 2, 150);
+    bg.fill({ color: 0x00e5ff, alpha: 0.1 });
 
     this.app.stage.addChild(bg);
-
-    // Game title
-    // (Handled by React overlay)
-
-    const frame = new Graphics();
-    const SYM = GAME_CONFIG.SYMBOL_SIZE;
-    const GAP = GAME_CONFIG.REEL_GAP;
-    const SGAP = GAME_CONFIG.SYMBOL_GAP;
-    const N = GAME_CONFIG.REEL_COUNT;
-    const ROWS = GAME_CONFIG.ROWS_VISIBLE;
-    // Actual pixel extent of all symbols:
-    //   width  = N*SYM + (N-1)*GAP
-    //   height = ROWS*SYM + (ROWS-1)*SGAP
-    // (Reel.visibleY already centers symbols, so top of row-0 = reelContainer.y)
-    const contentW = N * SYM + (N - 1) * GAP;
-    const contentH = ROWS * SYM + (ROWS - 1) * SGAP;
-    const startX = (900 - contentW) / 2;
-    const reelStartY = 65;
-    const PAD = 16;
-    const frameX = startX - PAD;
-    const frameY = reelStartY - PAD;
-    const frameW = contentW + PAD * 2;
-    const frameH = contentH + PAD * 2;
-
-    // Outer glow
-    frame.roundRect(frameX - 3, frameY - 3, frameW + 6, frameH + 6, 14);
-    frame.stroke({ width: 1, color: GAME_CONFIG.COLORS.GOLD, alpha: 0.3 });
-
-    // Main frame background
-    frame.roundRect(frameX, frameY, frameW, frameH, 12);
-    frame.fill({ color: 0x0d0d2a, alpha: 0.8 });
-    // Frame border
-    frame.roundRect(frameX, frameY, frameW, frameH, 12);
-    frame.stroke({ width: 2, color: GAME_CONFIG.COLORS.GOLD, alpha: 0.6 });
-
-    // Corner accents
-    const cornerSize = 20;
-    const corners = [
-      [frameX, frameY],
-      [frameX + frameW - cornerSize, frameY],
-      [frameX, frameY + frameH - cornerSize],
-      [frameX + frameW - cornerSize, frameY + frameH - cornerSize],
-    ];
-    corners.forEach(([cx, cy]) => {
-      frame.roundRect(cx, cy, cornerSize, cornerSize, 4);
-      frame.fill({ color: GAME_CONFIG.COLORS.GOLD, alpha: 0.15 });
-    });
-
-    this.app.stage.addChild(frame);
   }
 
   private createReels() {
@@ -156,8 +114,9 @@ export class SlotGame {
     const contentH =
       ROWS_VISIBLE * SYMBOL_SIZE + (ROWS_VISIBLE - 1) * SYMBOL_GAP;
     // startX = left edge of first symbol
-    const startX = (900 - contentW) / 2;
-    const reelStartY = 65;
+    const startX = (this.app.screen.width - contentW) / 2;
+    // Center the reels vertically in the canvas
+    const reelStartY = (this.app.screen.height - contentH) / 2;
     // Reel containers are centered — reel i center x = startX + SYMBOL_SIZE/2 + i*(SYMBOL_SIZE+REEL_GAP)
     const reelCenterX0 = startX + SYMBOL_SIZE / 2;
 

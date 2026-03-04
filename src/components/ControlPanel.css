@@ -5,11 +5,9 @@
   gap: 24px;
   padding: 12px 24px;
   margin-top: 8px;
-  background: linear-gradient(
-    180deg,
-    rgba(18, 18, 42, 0.9),
-    rgba(10, 10, 26, 0.95)
-  );
+  background: linear-gradient(180deg,
+      rgba(18, 18, 42, 0.9),
+      rgba(10, 10, 26, 0.95));
   border-top: 1px solid rgba(255, 215, 0, 0.15);
   border-radius: 16px;
   backdrop-filter: blur(20px);
@@ -73,11 +71,9 @@
   font-weight: 700;
   letter-spacing: 1.5px;
   color: #ccccee;
-  background: linear-gradient(
-    180deg,
-    rgba(42, 42, 90, 0.8),
-    rgba(26, 26, 58, 0.9)
-  );
+  background: linear-gradient(180deg,
+      rgba(42, 42, 90, 0.8),
+      rgba(26, 26, 58, 0.9));
   border: 1px solid rgba(170, 170, 204, 0.2);
   border-radius: 8px;
   padding: 10px 16px;
@@ -87,11 +83,9 @@
 }
 
 .control-btn:hover:not(:disabled) {
-  background: linear-gradient(
-    180deg,
-    rgba(60, 60, 120, 0.8),
-    rgba(40, 40, 80, 0.9)
-  );
+  background: linear-gradient(180deg,
+      rgba(60, 60, 120, 0.8),
+      rgba(40, 40, 80, 0.9));
   border-color: rgba(255, 215, 0, 0.4);
   color: #ffffff;
   transform: translateY(-1px);
@@ -118,31 +112,25 @@
 }
 
 .control-btn.accent {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 215, 0, 0.15),
-    rgba(255, 165, 0, 0.1)
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 215, 0, 0.15),
+      rgba(255, 165, 0, 0.1));
   border-color: rgba(255, 215, 0, 0.3);
   color: #ffd700;
 }
 
 .control-btn.accent:hover:not(:disabled) {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 215, 0, 0.25),
-    rgba(255, 165, 0, 0.2)
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 215, 0, 0.25),
+      rgba(255, 165, 0, 0.2));
   border-color: rgba(255, 215, 0, 0.6);
   box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
 }
 
 .control-btn.gamble {
-  background: linear-gradient(
-    135deg,
-    rgba(156, 39, 176, 0.15),
-    rgba(224, 64, 251, 0.1)
-  );
+  background: linear-gradient(135deg,
+      rgba(156, 39, 176, 0.15),
+      rgba(224, 64, 251, 0.1));
   border-color: rgba(156, 39, 176, 0.3);
   color: rgba(156, 39, 176, 0.6);
 }
@@ -154,11 +142,9 @@
 }
 
 .control-btn.gamble.active:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(156, 39, 176, 0.3),
-    rgba(224, 64, 251, 0.2)
-  );
+  background: linear-gradient(135deg,
+      rgba(156, 39, 176, 0.3),
+      rgba(224, 64, 251, 0.2));
   box-shadow: 0 0 20px rgba(224, 64, 251, 0.2);
 }
 
@@ -166,6 +152,7 @@
   from {
     box-shadow: 0 0 5px rgba(224, 64, 251, 0.1);
   }
+
   to {
     box-shadow: 0 0 15px rgba(224, 64, 251, 0.3);
   }
@@ -182,43 +169,83 @@
 /* == SPIN BUTTON == */
 .spin-btn {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 110px;
+  height: 110px;
   border-radius: 50%;
-  border: 3px solid rgba(255, 215, 0, 0.6);
-  background: linear-gradient(135deg, #1a1a3a, #2a1a4a);
+  border: none;
+  background: radial-gradient(circle at 30% 30%, #4a2a7a, #1a0a3a);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow:
-    0 0 20px rgba(255, 215, 0, 0.2),
-    0 0 40px rgba(255, 215, 0, 0.1),
-    inset 0 0 20px rgba(255, 215, 0, 0.05);
-  animation: spinBtnPulse 2s ease-in-out infinite;
+    0 15px 25px rgba(0, 0, 0, 0.5),
+    inset 0 4px 6px rgba(255, 255, 255, 0.3),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(0, 229, 255, 0.2),
+    0 0 40px rgba(0, 229, 255, 0.1);
+  animation: spinBtnPulse 2.5s ease-in-out infinite;
+  z-index: 10;
+}
+
+.spin-btn::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #ffd700, #ff00ff, #00e5ff, #ffd700);
+  z-index: -1;
+  opacity: 0.6;
+  animation: spinBorder 4s linear infinite;
+  mask-image: radial-gradient(transparent 60%, black 61%);
+  -webkit-mask-image: radial-gradient(transparent 60%, black 61%);
 }
 
 .spin-btn:hover:not(.disabled):not(.spinning) {
-  border-color: rgba(255, 215, 0, 0.9);
-  transform: scale(1.05);
+  transform: scale(1.08) translateY(-4px);
   box-shadow:
-    0 0 30px rgba(255, 215, 0, 0.4),
-    0 0 60px rgba(255, 215, 0, 0.2),
-    inset 0 0 30px rgba(255, 215, 0, 0.1);
+    0 20px 30px rgba(0, 0, 0, 0.6),
+    inset 0 6px 8px rgba(255, 255, 255, 0.4),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(0, 229, 255, 0.4),
+    0 0 60px rgba(0, 229, 255, 0.2);
+}
+
+.spin-btn:hover:not(.disabled):not(.spinning)::before {
+  opacity: 1;
+  animation: spinBorder 2s linear infinite;
 }
 
 .spin-btn:active:not(.disabled):not(.spinning) {
-  transform: scale(0.95);
+  transform: scale(0.95) translateY(2px);
+  box-shadow:
+    0 5px 10px rgba(0, 0, 0, 0.5),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.4);
 }
 
 .spin-btn.spinning {
-  animation: spinBtnRotate 1s linear infinite;
-  border-color: rgba(0, 229, 255, 0.5);
+  background: radial-gradient(circle at 30% 30%, #1a3a4a, #0a1a2a);
   box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
 }
 
+.spin-btn.spinning::before {
+  background: conic-gradient(from 0deg, #00e5ff, transparent, #00e5ff);
+  animation: spinBorder 0.8s linear infinite;
+  opacity: 1;
+}
+
 .spin-btn.disabled {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: not-allowed;
   animation: none;
+  filter: grayscale(0.8);
+}
+
+.spin-btn.disabled::before {
+  animation: none;
+  opacity: 0.2;
 }
 
 .spin-btn-inner {
@@ -231,50 +258,51 @@
 
 .spin-text {
   font-family: "Inter", sans-serif;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 900;
-  letter-spacing: 3px;
-  color: #ffd700;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  letter-spacing: 4px;
+  background: linear-gradient(180deg, #ffffff, #ffd700);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
 }
 
 .spin-sub {
   font-family: "Inter", sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  color: rgba(255, 215, 0, 0.6);
+  font-size: 10px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.7);
   margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .spinning-text {
   font-size: 36px;
   color: #00e5ff;
   animation: none;
+  text-shadow: 0 0 15px rgba(0, 229, 255, 0.8);
 }
 
 @keyframes spinBtnPulse {
+
   0%,
   100% {
-    box-shadow:
-      0 0 20px rgba(255, 215, 0, 0.2),
-      0 0 40px rgba(255, 215, 0, 0.1);
+    transform: scale(1);
   }
+
   50% {
-    box-shadow:
-      0 0 25px rgba(255, 215, 0, 0.3),
-      0 0 50px rgba(255, 215, 0, 0.15);
+    transform: scale(1.03);
   }
 }
 
-@keyframes spinBtnRotate {
+@keyframes spinBorder {
   from {
-    border-color: rgba(0, 229, 255, 0.3);
+    transform: rotate(0deg);
   }
-  50% {
-    border-color: rgba(0, 229, 255, 0.7);
-  }
+
   to {
-    border-color: rgba(0, 229, 255, 0.3);
+    transform: rotate(360deg);
   }
 }
 
@@ -289,11 +317,9 @@
   left: 50%;
   transform: translateX(-50%);
   margin-bottom: 8px;
-  background: linear-gradient(
-    180deg,
-    rgba(30, 30, 60, 0.95),
-    rgba(20, 20, 40, 0.98)
-  );
+  background: linear-gradient(180deg,
+      rgba(30, 30, 60, 0.95),
+      rgba(20, 20, 40, 0.98));
   border: 1px solid rgba(170, 170, 204, 0.2);
   border-radius: 10px;
   padding: 6px;
@@ -329,6 +355,7 @@
     opacity: 0;
     transform: translateX(-50%) translateY(5px);
   }
+
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0);

@@ -6,11 +6,11 @@ export const GAME_CONFIG = {
   ROWS_TOTAL: 4, // extra row for scroll buffer
 
   // Symbol sizing
-  SYMBOL_SIZE: 110,
-  SYMBOL_GAP: 8,
+  SYMBOL_SIZE: 150,
+  SYMBOL_GAP: 0,
 
   // Reel spacing
-  REEL_GAP: 10,
+  REEL_GAP: 0,
 
   // Spin timing
   SPIN_SPEED: 30, // pixels per tick at full speed

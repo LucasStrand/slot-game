@@ -1,0 +1,195 @@
+.game-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0a0a1a 0%, #12122a 50%, #0a0a1a 100%);
+  padding: 10px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* == TITLE == */
+.game-title {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  margin-bottom: 8px;
+  user-select: none;
+}
+
+.title-neon {
+  font-family: "Inter", sans-serif;
+  font-size: 32px;
+  font-weight: 300;
+  letter-spacing: 12px;
+  color: #00e5ff;
+  text-shadow:
+    0 0 10px rgba(0, 229, 255, 0.5),
+    0 0 30px rgba(0, 229, 255, 0.3),
+    0 0 60px rgba(0, 229, 255, 0.1);
+}
+
+.title-fortune {
+  font-family: "Inter", sans-serif;
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: 6px;
+  background: linear-gradient(135deg, #ffd700, #ffa500, #ffd700);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
+}
+
+/* == CANVAS == */
+.canvas-wrapper {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow:
+    0 0 30px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(26, 26, 74, 0.3),
+    inset 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+.canvas-wrapper canvas {
+  display: block;
+  border-radius: 16px;
+}
+
+/* == WIN OVERLAY == */
+.win-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.win-overlay.regular .win-overlay-text {
+  font-size: 28px;
+  color: #ffd700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+}
+
+.win-overlay.big .win-overlay-text {
+  font-size: 48px;
+  color: #ffd700;
+  text-shadow:
+    0 0 20px rgba(255, 215, 0, 0.8),
+    0 0 40px rgba(255, 215, 0, 0.4);
+  animation: winPulse 0.6s ease-in-out infinite alternate;
+}
+
+.win-overlay.mega .win-overlay-text {
+  font-size: 56px;
+  background: linear-gradient(135deg, #ff00ff, #ffd700, #00e5ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 30px rgba(255, 0, 255, 0.5));
+  animation: winPulse 0.4s ease-in-out infinite alternate;
+}
+
+.win-overlay.ultra .win-overlay-text {
+  font-size: 64px;
+  background: linear-gradient(135deg, #00e5ff, #ffd700, #ff00ff, #00e5ff);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 40px rgba(0, 229, 255, 0.6));
+  animation:
+    winPulse 0.3s ease-in-out infinite alternate,
+    rainbowShift 2s linear infinite;
+}
+
+.win-overlay-text {
+  font-family: "Inter", sans-serif;
+  font-weight: 900;
+  letter-spacing: 4px;
+}
+
+@keyframes winPulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes rainbowShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 300% 50%;
+  }
+}
+
+/* == FREE SPIN INDICATOR == */
+.free-spin-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  z-index: 5;
+}
+
+.free-spin-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 229, 255, 0.15),
+    rgba(156, 39, 176, 0.15)
+  );
+  border: 2px solid #00e5ff;
+  border-radius: 12px;
+  padding: 8px 16px;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+  animation: freeSpinGlow 1.5s ease-in-out infinite alternate;
+}
+
+.free-spin-count {
+  font-family: "Inter", sans-serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: #00e5ff;
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+}
+
+.free-spin-label {
+  font-family: "Inter", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #aaccff;
+}
+
+.free-spin-total {
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffd700;
+}
+
+@keyframes freeSpinGlow {
+  from {
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+  }
+  to {
+    box-shadow: 0 0 30px rgba(0, 229, 255, 0.5);
+  }
+}

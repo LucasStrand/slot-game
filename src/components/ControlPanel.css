@@ -1,0 +1,336 @@
+.control-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 12px 24px;
+  margin-top: 8px;
+  background: linear-gradient(
+    180deg,
+    rgba(18, 18, 42, 0.9),
+    rgba(10, 10, 26, 0.95)
+  );
+  border-top: 1px solid rgba(255, 215, 0, 0.15);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 -4px 30px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  min-width: 800px;
+  user-select: none;
+}
+
+.controls-left,
+.controls-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.controls-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* == CONTROL GROUPS == */
+.control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.control-label {
+  font-family: "Inter", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: rgba(170, 170, 204, 0.7);
+  text-transform: uppercase;
+}
+
+.control-value-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.control-value {
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  min-width: 60px;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+/* == BUTTONS == */
+.control-btn {
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #ccccee;
+  background: linear-gradient(
+    180deg,
+    rgba(42, 42, 90, 0.8),
+    rgba(26, 26, 58, 0.9)
+  );
+  border: 1px solid rgba(170, 170, 204, 0.2);
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+.control-btn:hover:not(:disabled) {
+  background: linear-gradient(
+    180deg,
+    rgba(60, 60, 120, 0.8),
+    rgba(40, 40, 80, 0.9)
+  );
+  border-color: rgba(255, 215, 0, 0.4);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.control-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.control-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.control-btn.small {
+  padding: 6px 10px;
+  font-size: 16px;
+  font-weight: 900;
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: 6px;
+}
+
+.control-btn.accent {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.15),
+    rgba(255, 165, 0, 0.1)
+  );
+  border-color: rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+}
+
+.control-btn.accent:hover:not(:disabled) {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.25),
+    rgba(255, 165, 0, 0.2)
+  );
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
+}
+
+.control-btn.gamble {
+  background: linear-gradient(
+    135deg,
+    rgba(156, 39, 176, 0.15),
+    rgba(224, 64, 251, 0.1)
+  );
+  border-color: rgba(156, 39, 176, 0.3);
+  color: rgba(156, 39, 176, 0.6);
+}
+
+.control-btn.gamble.active {
+  color: #e040fb;
+  border-color: rgba(224, 64, 251, 0.5);
+  animation: gambleGlow 1s ease-in-out infinite alternate;
+}
+
+.control-btn.gamble.active:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(156, 39, 176, 0.3),
+    rgba(224, 64, 251, 0.2)
+  );
+  box-shadow: 0 0 20px rgba(224, 64, 251, 0.2);
+}
+
+@keyframes gambleGlow {
+  from {
+    box-shadow: 0 0 5px rgba(224, 64, 251, 0.1);
+  }
+  to {
+    box-shadow: 0 0 15px rgba(224, 64, 251, 0.3);
+  }
+}
+
+.control-btn.info-btn {
+  font-size: 18px;
+  padding: 8px 12px;
+  border-radius: 50%;
+  min-width: 38px;
+  min-height: 38px;
+}
+
+/* == SPIN BUTTON == */
+.spin-btn {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 215, 0, 0.6);
+  background: linear-gradient(135deg, #1a1a3a, #2a1a4a);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 0 20px rgba(255, 215, 0, 0.2),
+    0 0 40px rgba(255, 215, 0, 0.1),
+    inset 0 0 20px rgba(255, 215, 0, 0.05);
+  animation: spinBtnPulse 2s ease-in-out infinite;
+}
+
+.spin-btn:hover:not(.disabled):not(.spinning) {
+  border-color: rgba(255, 215, 0, 0.9);
+  transform: scale(1.05);
+  box-shadow:
+    0 0 30px rgba(255, 215, 0, 0.4),
+    0 0 60px rgba(255, 215, 0, 0.2),
+    inset 0 0 30px rgba(255, 215, 0, 0.1);
+}
+
+.spin-btn:active:not(.disabled):not(.spinning) {
+  transform: scale(0.95);
+}
+
+.spin-btn.spinning {
+  animation: spinBtnRotate 1s linear infinite;
+  border-color: rgba(0, 229, 255, 0.5);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+}
+
+.spin-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  animation: none;
+}
+
+.spin-btn-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.spin-text {
+  font-family: "Inter", sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.spin-sub {
+  font-family: "Inter", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 215, 0, 0.6);
+  margin-top: 2px;
+}
+
+.spinning-text {
+  font-size: 36px;
+  color: #00e5ff;
+  animation: none;
+}
+
+@keyframes spinBtnPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(255, 215, 0, 0.2),
+      0 0 40px rgba(255, 215, 0, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 25px rgba(255, 215, 0, 0.3),
+      0 0 50px rgba(255, 215, 0, 0.15);
+  }
+}
+
+@keyframes spinBtnRotate {
+  from {
+    border-color: rgba(0, 229, 255, 0.3);
+  }
+  50% {
+    border-color: rgba(0, 229, 255, 0.7);
+  }
+  to {
+    border-color: rgba(0, 229, 255, 0.3);
+  }
+}
+
+/* == AUTO MENU == */
+.auto-container {
+  position: relative;
+}
+
+.auto-menu {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  background: linear-gradient(
+    180deg,
+    rgba(30, 30, 60, 0.95),
+    rgba(20, 20, 40, 0.98)
+  );
+  border: 1px solid rgba(170, 170, 204, 0.2);
+  border-radius: 10px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: menuFadeIn 0.2s ease-out;
+  z-index: 20;
+}
+
+.auto-option {
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ccccee;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.auto-option:hover {
+  background: rgba(255, 215, 0, 0.1);
+  color: #ffd700;
+}
+
+@keyframes menuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}

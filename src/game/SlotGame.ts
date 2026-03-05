@@ -180,8 +180,11 @@ export class SlotGame {
 
     if (this._balance < totalBet && this._freeSpinsRemaining <= 0) return;
 
+    // Capture free spin state BEFORE decrementing so the multiplier applies correctly
+    const freeSpinActive = this._freeSpinsRemaining > 0;
+
     // Deduct bet (unless free spin)
-    if (this._freeSpinsRemaining <= 0) {
+    if (!freeSpinActive) {
       this._balance -= totalBet;
     } else {
       this._freeSpinsRemaining--;
@@ -197,9 +200,6 @@ export class SlotGame {
 
     // Sound
     soundManager.playSpinStart();
-
-    // Generate spin result
-    const freeSpinActive = this._freeSpinsRemaining > 0;
     this.lastSpinResult = this.gameLogic.spin(
       activeLines,
       betLevel,

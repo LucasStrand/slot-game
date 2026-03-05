@@ -196,10 +196,15 @@ export class GameLogic {
     const scatterCount = this.countScatters(grid);
     const triggeredFreeSpins = scatterCount >= 3;
 
+    // Scatter pays out based on total bet (not per-line) when 3+ appear anywhere
+    const totalBet = betPerLine * activeLines;
+    const scatterMultiplier = SYMBOLS[SymbolId.SCATTER].payouts[scatterCount] ?? 0;
+    const scatterPayout = scatterCount >= 3 ? scatterMultiplier * totalBet : 0;
+
     return {
       grid,
       wins,
-      totalWin: totalWin * freeSpinMultiplier,
+      totalWin: (totalWin + scatterPayout) * freeSpinMultiplier,
       scatterCount,
       triggeredFreeSpins,
     };

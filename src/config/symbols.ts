@@ -35,7 +35,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef> = {
     assetUrl: "/assets/symbols/wild_symbol_1772619426037.png",
     color: "#FFD700",
     glowColor: "#FFA500",
-    payouts: { 3: 10, 4: 25, 5: 50 },
+    payouts: { 3: 20, 4: 50, 5: 200 },
     weight: 2,
   },
   [SymbolId.SCATTER]: {
@@ -46,7 +46,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef> = {
     assetUrl: "/assets/symbols/scatter_diamond_1772619444174.png",
     color: "#00E5FF",
     glowColor: "#00BCD4",
-    payouts: { 3: 2, 4: 10, 5: 50 },
+    payouts: { 3: 2, 4: 10, 5: 50 }, // multiplied by total bet in spin()
     weight: 3,
   },
   [SymbolId.SEVEN]: {
@@ -57,7 +57,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef> = {
     assetUrl: "/assets/symbols/lucky_seven_1772619531832.png",
     color: "#FF1744",
     glowColor: "#D50000",
-    payouts: { 3: 5, 4: 25, 5: 100 },
+    payouts: { 3: 10, 4: 50, 5: 250 },
     weight: 4,
   },
   [SymbolId.BELL]: {
@@ -68,7 +68,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef> = {
     assetUrl: "/assets/symbols/bell_symbol_1772619858355.png",
     color: "#FFD700",
     glowColor: "#FFC107",
-    payouts: { 3: 4, 4: 20, 5: 75 },
+    payouts: { 3: 8, 4: 40, 5: 150 },
     weight: 5,
   },
   [SymbolId.STAR]: {
@@ -79,7 +79,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef> = {
     assetUrl: "/assets/symbols/star_symbol_1772620021495.png",
     color: "#E040FB",
     glowColor: "#AA00FF",
-    payouts: { 3: 3, 4: 15, 5: 50 },
+    payouts: { 3: 6, 4: 30, 5: 100 },
     weight: 6,
   },
   [SymbolId.CHERRY]: {
@@ -90,7 +90,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef> = {
     assetUrl: "/assets/symbols/cherry_symbol_1772620033030.png",
     color: "#FF4081",
     glowColor: "#F50057",
-    payouts: { 3: 2, 4: 10, 5: 25 },
+    payouts: { 3: 4, 4: 20, 5: 60 },
     weight: 8,
   },
   [SymbolId.LEMON]: {
@@ -101,7 +101,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef> = {
     assetUrl: "/assets/symbols/lemon_symbol.png",
     color: "#FFEB3B",
     glowColor: "#FDD835",
-    payouts: { 3: 2, 4: 8, 5: 20 },
+    payouts: { 3: 3, 4: 15, 5: 40 },
     weight: 9,
   },
   [SymbolId.GRAPE]: {
@@ -112,7 +112,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef> = {
     assetUrl: "/assets/symbols/grape_symbol.png",
     color: "#9C27B0",
     glowColor: "#7B1FA2",
-    payouts: { 3: 1, 4: 5, 5: 15 },
+    payouts: { 3: 2, 4: 10, 5: 25 },
     weight: 10,
   },
   [SymbolId.ORANGE]: {
@@ -123,7 +123,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef> = {
     assetUrl: "/assets/symbols/orange_symbol.png",
     color: "#FF9800",
     glowColor: "#F57C00",
-    payouts: { 3: 1, 4: 4, 5: 10 },
+    payouts: { 3: 2, 4: 8, 5: 22 },
     weight: 10,
   },
 };

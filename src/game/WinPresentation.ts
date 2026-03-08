@@ -6,6 +6,8 @@ import { GAME_CONFIG } from "../config/gameConfig";
 import type { WinResult } from "./GameLogic";
 import { soundManager } from "./SoundManager";
 
+export type ScatterPosition = { x: number; y: number };
+
 export class WinPresentation {
   private app: Application;
   private lineContainer: Container;
@@ -301,5 +303,174 @@ export class WinPresentation {
       },
     });
     this.activeAnimations.push(tween);
+  }
+
+  // Full bonus intro sequence — awaitable, ~3.1 s total
+  async showBonusTrigger(
+    scatterPositions: ScatterPosition[],
+    freeSpinCount: number,
+  ): Promise<void> {
+    return new Promise((resolve) => {
+      const W = this.app.screen.width;
+      const H = this.app.screen.height;
+
+      // Deep dark overlay
+      const overlay = new Graphics();
+      overlay.rect(0, 0, W, H);
+      overlay.fill({ color: 0x000820, alpha: 0 });
+      this.overlayContainer.addChild(overlay);
+      const overlayIn = gsap.to(overlay, { alpha: 0.88, duration: 0.45 });
+      this.activeAnimations.push(overlayIn);
+
+      // Three expanding cyan pulse rings per scatter
+      scatterPositions.forEach((pos, i) => {
+        for (let ring = 0; ring < 3; ring++) {
+          const circle = new Graphics();
+          circle.circle(0, 0, GAME_CONFIG.SYMBOL_SIZE * 0.44);
+          circle.stroke({ width: 3, color: 0x00e5ff, alpha: 1 });
+          circle.x = pos.x;
+          circle.y = pos.y;
+          circle.scale.set(0.2);
+          circle.alpha = 0.9;
+          this.overlayContainer.addChild(circle);
+
+          const delay = i * 0.12 + ring * 0.18;
+          const st = gsap.to(circle.scale, {
+            x: 5,
+            y: 5,
+            duration: 0.9,
+            delay,
+            ease: "power2.out",
+          });
+          const at = gsap.to(circle, {
+            alpha: 0,
+            duration: 0.9,
+            delay,
+            ease: "power2.in",
+            onComplete: () => circle.destroy(),
+          });
+          this.activeAnimations.push(st, at);
+        }
+      });
+
+      // Diamond burst from each scatter at 0.4 s
+      setTimeout(
+        () => scatterPositions.forEach((p) => this.createDiamondBurst(p.x, p.y)),
+        400,
+      );
+
+      // "💎 BONUS 💎" heading
+      const bonusText = new Text({
+        text: "💎  BONUS  💎",
+        style: new TextStyle({
+          fontFamily: '"Inter", "Segoe UI", sans-serif',
+          fontSize: 90,
+          fontWeight: "bold",
+          fill: "#00E5FF",
+          stroke: { color: "#003060", width: 6 },
+          dropShadow: { color: "#00E5FF", blur: 40, distance: 0, alpha: 1 },
+        }),
+      });
+      bonusText.anchor.set(0.5);
+      bonusText.x = W / 2;
+      bonusText.y = H / 2 - 44;
+      bonusText.alpha = 0;
+      bonusText.scale.set(0.2);
+      this.winTextContainer.addChild(bonusText);
+
+      // "X FREE SPINS" sub-text
+      const spinsText = new Text({
+        text: `${freeSpinCount} FREE SPINS`,
+        style: new TextStyle({
+          fontFamily: '"Inter", "Segoe UI", sans-serif',
+          fontSize: 52,
+          fontWeight: "bold",
+          fill: "#FFD700",
+          stroke: { color: "#5a3a00", width: 5 },
+          dropShadow: { color: "#FFD700", blur: 28, distance: 0, alpha: 0.9 },
+        }),
+      });
+      spinsText.anchor.set(0.5);
+      spinsText.x = W / 2;
+      spinsText.y = H / 2 + 52;
+      spinsText.alpha = 0;
+      spinsText.scale.set(0.2);
+      this.winTextContainer.addChild(spinsText);
+
+      // Animate texts in at 0.5 s
+      setTimeout(() => {
+        const tl = gsap.timeline();
+        tl.to(bonusText, { alpha: 1, duration: 0.4, ease: "back.out(2)" });
+        tl.to(
+          bonusText.scale,
+          { x: 1, y: 1, duration: 0.45, ease: "back.out(2.5)" },
+          "<",
+        );
+        tl.to(spinsText, { alpha: 1, duration: 0.35, ease: "back.out(2)" }, "-=0.15");
+        tl.to(
+          spinsText.scale,
+          { x: 1, y: 1, duration: 0.35, ease: "back.out(2.5)" },
+          "<",
+        );
+        this.activeAnimations.push(tl as unknown as gsap.core.Tween);
+        this.createScreenShake();
+      }, 500);
+
+      // Gentle pulse on bonusText while visible
+      setTimeout(() => {
+        const pulse = gsap.to(bonusText.scale, {
+          x: 1.06,
+          y: 1.06,
+          duration: 0.5,
+          yoyo: true,
+          repeat: 3,
+          ease: "sine.inOut",
+        });
+        this.activeAnimations.push(pulse);
+      }, 1000);
+
+      // Fade everything out at 2.5 s then resolve
+      setTimeout(() => {
+        gsap.to([bonusText, spinsText, overlay], {
+          alpha: 0,
+          duration: 0.6,
+          ease: "power2.in",
+          onComplete: () => {
+            bonusText.destroy();
+            spinsText.destroy();
+            overlay.destroy();
+            resolve();
+          },
+        });
+      }, 2500);
+    });
+  }
+
+  private createDiamondBurst(x: number, y: number) {
+    const count = 18;
+    for (let i = 0; i < count; i++) {
+      const gem = new Graphics();
+      gem.poly([0, -9, 7, 0, 0, 9, -7, 0]);
+      gem.fill({ color: i % 2 === 0 ? 0x00e5ff : 0xffd700 });
+      gem.x = x;
+      gem.y = y;
+      gem.alpha = 1;
+      gem.scale.set(0.5 + Math.random() * 0.5);
+      this.overlayContainer.addChild(gem);
+
+      const angle = (Math.PI * 2 * i) / count + Math.random() * 0.2;
+      const distance = 70 + Math.random() * 130;
+      const tween = gsap.to(gem, {
+        x: x + Math.cos(angle) * distance,
+        y: y + Math.sin(angle) * distance - 20,
+        alpha: 0,
+        rotation: Math.random() * Math.PI * 4,
+        duration: 1.0 + Math.random() * 0.5,
+        ease: "power2.out",
+        delay: Math.random() * 0.15,
+        onComplete: () => gem.destroy(),
+      });
+      this.activeAnimations.push(tween);
+    }
   }
 }

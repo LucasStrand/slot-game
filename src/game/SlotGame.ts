@@ -4,7 +4,7 @@ import { GAME_CONFIG } from "../config/gameConfig";
 import { SymbolId } from "../config/symbols";
 import { Reel } from "./Reel";
 import { GameLogic, type SpinResult } from "./GameLogic";
-import { WinPresentation } from "./WinPresentation";
+import { WinPresentation, type ScatterPosition } from "./WinPresentation";
 import { ParticleSystem } from "./ParticleSystem";
 import { soundManager } from "./SoundManager";
 
@@ -222,10 +222,10 @@ export class SlotGame {
     this.emitState();
 
     // Check wins
-    await this.evaluateWins();
+    await this.evaluateWins(freeSpinActive);
   }
 
-  private async evaluateWins() {
+  private async evaluateWins(freeSpinActive: boolean) {
     if (!this.lastSpinResult) return;
 
     const result = this.lastSpinResult;
@@ -233,27 +233,35 @@ export class SlotGame {
     const activeLines = GAME_CONFIG.LINE_OPTIONS[this._lineIndex];
     const totalBet = betLevel * activeLines;
 
-    if (result.wins.length > 0 || result.triggeredFreeSpins) {
+    const hasActivity =
+      result.wins.length > 0 || result.totalWin > 0 || result.triggeredFreeSpins;
+
+    if (hasActivity) {
       this._state = "win_present";
       this.emitState();
 
-      // Show win lines
-      const reelPositions = this.reels.map((reel) => {
-        return reel.symbolPositions.map((pos) => ({
+      // Map reel symbol positions to screen coordinates once
+      const reelPositions = this.reels.map((reel) =>
+        reel.symbolPositions.map((pos) => ({
           x: reel.container.x + pos.x,
           y: reel.container.y + pos.y,
-        }));
-      });
+        })),
+      );
 
+      // Credit total win (payline wins + scatter payout) to balance
+      if (result.totalWin > 0) {
+        this._balance += result.totalWin;
+        this._lastWin = result.totalWin;
+        if (freeSpinActive) {
+          this._freeSpinTotalWin += result.totalWin;
+        }
+      }
+
+      // Show payline win effects
       if (result.wins.length > 0) {
         this.winPresentation.showWinLines(result.wins, reelPositions);
         this.winPresentation.showWinAmount(result.totalWin, totalBet);
 
-        // Update balance
-        this._balance += result.totalWin;
-        this._lastWin = result.totalWin;
-
-        // Win message
         const ratio = result.totalWin / totalBet;
         if (ratio >= GAME_CONFIG.WIN_TIER_ULTRA) {
           this._winMessage = "ULTRA WIN!!!";
@@ -265,18 +273,12 @@ export class SlotGame {
           this._winMessage = `WIN $${result.totalWin.toFixed(2)}`;
         }
 
-        // Free spin tracking
-        if (this._freeSpinsRemaining > 0) {
-          this._freeSpinTotalWin += result.totalWin;
-        }
-
         this.emitState();
 
-        // Particle burst on winning symbols
         for (const win of result.wins) {
           for (let r = 0; r < win.count; r++) {
             const row = win.pattern[r];
-            if (reelPositions[r] && reelPositions[r][row]) {
+            if (reelPositions[r]?.[row]) {
               this.particleSystem.burst(
                 reelPositions[r][row].x,
                 reelPositions[r][row].y,
@@ -287,25 +289,47 @@ export class SlotGame {
           }
         }
 
-        // Big win coin rain
         if (ratio >= GAME_CONFIG.WIN_TIER_BIG) {
           this.particleSystem.coinRain(2000);
         }
       }
 
-      // Free spins trigger
-      if (result.triggeredFreeSpins && this._freeSpinsRemaining <= 0) {
+      // Bonus trigger: full cinematic intro before granting free spins
+      if (result.triggeredFreeSpins && !freeSpinActive) {
+        // Let any payline win show briefly before the bonus overlay
+        if (result.wins.length > 0) {
+          await new Promise((r) => setTimeout(r, 900));
+        }
+
+        // Collect scatter screen positions for the animation
+        const scatterPositions: ScatterPosition[] = [];
+        for (let reel = 0; reel < result.grid.length; reel++) {
+          for (let row = 0; row < result.grid[reel].length; row++) {
+            if (
+              result.grid[reel][row] === SymbolId.SCATTER &&
+              reelPositions[reel]?.[row]
+            ) {
+              scatterPositions.push(reelPositions[reel][row]);
+            }
+          }
+        }
+
+        soundManager.playFreeSpinTrigger();
+        await this.winPresentation.showBonusTrigger(
+          scatterPositions,
+          GAME_CONFIG.FREE_SPIN_COUNT,
+        );
+
         this._freeSpinsRemaining = GAME_CONFIG.FREE_SPIN_COUNT;
         this._freeSpinTotalWin = 0;
         this._winMessage = `${GAME_CONFIG.FREE_SPIN_COUNT} FREE SPINS!`;
-        soundManager.playFreeSpinTrigger();
         this.emitState();
+      } else {
+        // Regular wait for win presentation to finish
+        const waitTime =
+          result.totalWin / totalBet >= GAME_CONFIG.WIN_TIER_BIG ? 3500 : 2000;
+        await new Promise((r) => setTimeout(r, waitTime));
       }
-
-      // Wait for win presentation
-      const waitTime =
-        result.totalWin / totalBet >= GAME_CONFIG.WIN_TIER_BIG ? 3500 : 2000;
-      await new Promise((r) => setTimeout(r, waitTime));
     }
 
     this._state = "idle";

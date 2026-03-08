@@ -197,20 +197,71 @@ export class SoundManager {
     if (!this.ctx || !this.masterGain) return;
 
     const now = this.ctx.currentTime;
-    // Magical shimmer
+
+    // Phase 1: sub-bass rumble buildup (0–0.9 s)
+    const rumble = this.ctx.createOscillator();
+    const rumbleGain = this.ctx.createGain();
+    rumble.type = "sawtooth";
+    rumble.frequency.setValueAtTime(55, now);
+    rumble.frequency.linearRampToValueAtTime(110, now + 0.9);
+    rumbleGain.gain.setValueAtTime(0, now);
+    rumbleGain.gain.linearRampToValueAtTime(0.1, now + 0.1);
+    rumbleGain.gain.linearRampToValueAtTime(0, now + 0.9);
+    rumble.connect(rumbleGain);
+    rumbleGain.connect(this.masterGain!);
+    rumble.start(now);
+    rumble.stop(now + 0.95);
+
+    // Phase 2: ascending pentatonic arpeggio (0.2–1.1 s)
+    const arpeggioFreqs = [261, 329, 392, 523, 659, 784, 1047, 1319];
+    arpeggioFreqs.forEach((freq, i) => {
+      const osc = this.ctx!.createOscillator();
+      const gain = this.ctx!.createGain();
+      osc.type = "triangle";
+      osc.frequency.value = freq;
+      const t = now + 0.2 + i * 0.1;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.18, t + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.01, t + 0.32);
+      osc.connect(gain);
+      gain.connect(this.masterGain!);
+      osc.start(t);
+      osc.stop(t + 0.38);
+    });
+
+    // Phase 3: high shimmer cascade (1.2–1.7 s)
     for (let i = 0; i < 8; i++) {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       osc.type = "sine";
-      osc.frequency.value = 800 + i * 200 + Math.random() * 100;
-      gain.gain.setValueAtTime(0, now + i * 0.08);
-      gain.gain.linearRampToValueAtTime(0.15, now + i * 0.08 + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.08 + 0.4);
+      osc.frequency.value = 1200 + i * 200 + Math.random() * 80;
+      const t = now + 1.2 + i * 0.06;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.12, t + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.01, t + 0.38);
       osc.connect(gain);
       gain.connect(this.masterGain!);
-      osc.start(now + i * 0.08);
-      osc.stop(now + i * 0.08 + 0.4);
+      osc.start(t);
+      osc.stop(t + 0.42);
     }
+
+    // Phase 4: triumphant major chord with sustain (1.8–3.2 s)
+    const chordFreqs = [523, 659, 784, 1047];
+    chordFreqs.forEach((freq, i) => {
+      const osc = this.ctx!.createOscillator();
+      const gain = this.ctx!.createGain();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      const t = now + 1.8;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.14 - i * 0.02, t + 0.15);
+      gain.gain.linearRampToValueAtTime(0.07 - i * 0.01, t + 0.9);
+      gain.gain.linearRampToValueAtTime(0, t + 1.4);
+      osc.connect(gain);
+      gain.connect(this.masterGain!);
+      osc.start(t);
+      osc.stop(t + 1.45);
+    });
   }
 
   playCountUp() {
